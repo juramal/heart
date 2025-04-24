@@ -3,63 +3,52 @@
 # python -m pip install pandas
 
 import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import OneHotEncoder
 from sklearn.neural_network import MLPClassifier
+from sklearn.metrics import accuracy_score
 
 #%% CARGA DOS DADOS
 df_heart = pd.read_csv('heart.csv')
 print('Tabela de dados:\n', df_heart)
 input('Aperte uma tecla para continuar: \n')
 
-# matriz de treinamento (registros com campos ou atributos)
+# Separar matriz de treinamento (X) e vetor de classes (y)
 X = df_heart.loc[:, 'Age':'ST_Slope']   # de Age até ST_Slope
-print("Matriz de entradas (treinamento):\n", X)
-input('Aperte uma tecla para continuar: \n')
-
-# vetor de classes
 y = df_heart['HeartDisease']
-print("Vetor de classes (treinamento):\n", y)
+
+# Dividir os dados em 80% para treinamento e 20% para teste
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+print("Dados de treinamento e teste separados.")
 input('Aperte uma tecla para continuar: \n')
 
 #%% ONE HOT ENCODER - pois os dados são nominais
-from sklearn.preprocessing import OneHotEncoder
-
 # One-Hot Encoding
 encoder = OneHotEncoder(sparse_output=False, handle_unknown='ignore')
-X = encoder.fit_transform( df_heart.loc[:, 'Age':'ST_Slope'] )
-print("Matriz de entradas codificadas:\n", X)
+X_train_encoded = encoder.fit_transform(X_train)
+X_test_encoded = encoder.transform(X_test)
+
+print("Matriz de entradas codificadas (treinamento):\n", X_train_encoded)
 input('Aperte uma tecla para continuar: \n')
 
 #%% CONFIG REDE NEURAL
-mlp = MLPClassifier(verbose=True, 
+mlp = MLPClassifier(
+                    verbose=True, 
                     max_iter=10000, 
                     tol=1e-6, 
-                    activation='relu')
+                    activation='relu',
+                    hidden_layer_sizes=(2, 6),
+                    )
 
 #%% TREINAMENTO DA REDE
-mlp.fit(X,y)      # executa treinamento - ver console
+mlp.fit(X_train_encoded, y_train)  # Executa treinamento
 
-#%% testes
-print('\n')
-for caso in X :
-    print('caso: ', caso, ' previsto: ', mlp.predict([caso]) )
+#%% TESTES
+predictions = mlp.predict(X_test_encoded)
 
-#%% teste de dado "não visto:"
-z = pd.read_csv('heart_test.csv')
-
-# Garantir que as colunas de teste sejam as mesmas usadas no treinamento
-X_test = z.loc[:, 'Age':'ST_Slope']
-
-# Transformar os dados de teste usando o encoder ajustado
-X1 = encoder.transform(X_test)
-print("\nNovo caso codificado (One-Hot Encoding):")
-print(pd.DataFrame(X1))  # Exibir como DataFrame para melhor visualização
-input('Aperte uma tecla para continuar: \n')
-
-# previsão
-predictions = mlp.predict(X1)
-print("\nPrevisões para os novos casos:")
-for i, pred in enumerate(predictions):
-    print(f"Registro {i + 1}: {z.iloc[i].to_dict()} => Previsão: {pred}")
+# Calcular e exibir a acurácia
+accuracy = accuracy_score(y_test, predictions)
+print(f"\nAcurácia do modelo: {accuracy * 100:.2f}%")
 
 #%% ALGUNS PARÂMETROS DA REDE
 print("\nResumo dos parâmetros da rede neural:")
