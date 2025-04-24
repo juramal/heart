@@ -51,6 +51,9 @@ predictions = mlp.predict(X_test_encoded)
 accuracy = accuracy_score(y_test, predictions)
 print(f"\nAcurácia do modelo: {accuracy * 100:.2f}%")
 
+# Exibir a matriz de confusão
+conf_matrix = confusion_matrix(y_test, predictions)
+
 # Plotar a matriz de confusão
 disp = ConfusionMatrixDisplay(confusion_matrix=conf_matrix, display_labels=mlp.classes_)
 disp.plot(cmap=plt.cm.Blues)
