@@ -6,7 +6,8 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.neural_network import MLPClassifier
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, confusion_matrix, ConfusionMatrixDisplay
+import matplotlib.pyplot as plt
 
 #%% CARGA DOS DADOS
 df_heart = pd.read_csv('heart.csv')
@@ -49,6 +50,12 @@ predictions = mlp.predict(X_test_encoded)
 # Calcular e exibir a acurácia
 accuracy = accuracy_score(y_test, predictions)
 print(f"\nAcurácia do modelo: {accuracy * 100:.2f}%")
+
+# Plotar a matriz de confusão
+disp = ConfusionMatrixDisplay(confusion_matrix=conf_matrix, display_labels=mlp.classes_)
+disp.plot(cmap=plt.cm.Blues)
+plt.title("Matriz de Confusão")
+plt.show()
 
 #%% ALGUNS PARÂMETROS DA REDE
 print("\nResumo dos parâmetros da rede neural:")
