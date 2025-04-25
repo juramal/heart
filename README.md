@@ -6,16 +6,8 @@ Este projeto utiliza técnicas de **aprendizado de máquina** para identificar p
 
 ## 📦 Estrutura do Projeto
 
-- `dataset.csv` → Base de dados com as respostas dos participantes.  
-- `main.py` → Script principal com o pipeline completo (pré-processamento, treino e avaliação).  
-- `requirements.txt` → Lista de dependências do projeto.  
+- `heart.csv` → Base de dados com os sintomas dos participantes.  
+- `8_heart.py` → Script principal com o pipeline completo (pré-processamento, treino e avaliação).
 - `.gitignore` → Arquivos e pastas ignorados pelo Git.  
 
 ---
-
-## 🚀 Como Executar o Projeto
-
-1. **Clone o repositório:**
-   ```bash
-   git clone https://github.com/juramal
-   cd heart
